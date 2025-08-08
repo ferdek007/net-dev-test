@@ -54,32 +54,32 @@
             };
 
             var vacations = new List<Vacation>
-        {
-            new Vacation // Urlop w bieżącym roku (5 dni roboczych)
             {
-                Id = 1,
-                DateSince = new DateTime(currentYear, 6, 1),
-                DateUntil = new DateTime(currentYear, 6, 7), // 1-7.06 (weekend 4-5.06)
-                EmployeeId = 1,
-                IsPartialVacation = 0
-            },
-            new Vacation // Urlop zaczynający się w poprzednim roku
-            {
-                Id = 2,
-                DateSince = new DateTime(currentYear - 1, 12, 29),
-                DateUntil = new DateTime(currentYear, 1, 2), // 29.12-2.01 (w bież. roku tylko 2 dni robocze)
-                EmployeeId = 1,
-                IsPartialVacation = 0
-            },
-            new Vacation // Urlop kończący się w przyszłym roku
-            {
-                Id = 3,
-                DateSince = new DateTime(currentYear, 12, 27),
-                DateUntil = new DateTime(currentYear + 1, 1, 3), // W bież. roku 27-31.12 (3 dni robocze)
-                EmployeeId = 1,
-                IsPartialVacation = 0
-            }
-        };
+                new Vacation // Vacation in the current year (5 working days)
+                {
+                    Id = 1,
+                    DateSince = new DateTime(currentYear, 6, 1),
+                    DateUntil = new DateTime(currentYear, 6, 7), // 1-7 June (weekend 4-5 June)
+                    EmployeeId = 1,
+                    IsPartialVacation = 0
+                },
+                new Vacation // Vacation starting in the previous year
+                {
+                    Id = 2,
+                    DateSince = new DateTime(currentYear - 1, 12, 29),
+                    DateUntil = new DateTime(currentYear, 1, 2), // 29 Dec - 2 Jan (only 2 working days in current year)
+                    EmployeeId = 1,
+                    IsPartialVacation = 0
+                },
+                new Vacation // Vacation ending in the next year
+                {
+                    Id = 3,
+                    DateSince = new DateTime(currentYear, 12, 27),
+                    DateUntil = new DateTime(currentYear + 1, 1, 3), // In current year: 27-31 Dec (3 working days)
+                    EmployeeId = 1,
+                    IsPartialVacation = 0
+                }
+            };
 
             int remainingDays = CountFreeDaysForEmployee(employee, vacations, vacationPackage);
 
@@ -101,7 +101,6 @@
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown if employee or vacationPackage is null.</exception>
         /// <exception cref="ArgumentException">Thrown if DateUntil is earlier than DateSince or vacationPackage.GrantedDays is negative.</exception> 
-         
         public static int CountFreeDaysForEmployee(Employee employee, List<Vacation> vacations, VacationPackage vacationPackage)
         {
             ArgumentNullException.ThrowIfNull(employee);
@@ -136,24 +135,18 @@
                 if (endDate < startDate)
                     throw new ArgumentException($"Invalid vacation dates: {vacation.DateSince} - {vacation.DateUntil}");
 
-                usedDays += CountWorkingDays(startDate, endDate);
+                // Exclude weekends
+                int workingDaysCount = 0;
+                for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
+                {
+                    if (date.DayOfWeek != DayOfWeek.Saturday && date.DayOfWeek != DayOfWeek.Sunday)
+                        workingDaysCount++;
+                }
+
+                usedDays += workingDaysCount;
             }
 
             return Math.Max(0, vacationPackage.GrantedDays - usedDays);
-        }
-
-        /// <summary>
-        /// Helper method to count working days (excludes weekends).
-        /// </summary>
-        public static int CountWorkingDays(DateTime startDate, DateTime endDate)
-        {
-            int count = 0;
-            for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
-            {
-                if (date.DayOfWeek != DayOfWeek.Saturday && date.DayOfWeek != DayOfWeek.Sunday)
-                    count++;
-            }
-            return count;
         }
     }
 }
