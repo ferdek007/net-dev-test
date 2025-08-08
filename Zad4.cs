@@ -7,8 +7,6 @@
         public int TeamId { get; set; }
         public int PositionId { get; set; }
         public int VacationPackageId { get; set; }
-
-
     }
 
     public class VacationPackage

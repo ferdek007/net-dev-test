@@ -1,4 +1,4 @@
-﻿namespace DevTask
+﻿namespace DevTask1
 {
     public class Employee
     {
@@ -88,7 +88,7 @@
                 {
                     var key = (employee.Id, currentEmployee.SuperiorId.Value);
 
-                    if (!visited.Add(key)) 
+                    if (!visited.Add(key))
                         break; // HashSet.Add returns false if already exists
 
                     structure.AddRelation(employee.Id, currentEmployee.SuperiorId.Value, level);
